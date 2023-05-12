@@ -1,0 +1,13 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: hong-eventlistner
+  namespace: hongspace
+spec:
+  serviceAccountName: trigger-sa
+  triggers:
+    - name: hong-trigger
+      bindings:
+       - ref: hong-pb 
+      template:
+         ref: hong-tt

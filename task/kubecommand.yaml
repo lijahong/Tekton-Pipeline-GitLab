@@ -1,0 +1,63 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kubernetes-actions
+  namespace: hongspace
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Kubernetes
+    tekton.dev/tags: CLI, kubectl
+    tekton.dev/displayName: "kubernetes actions"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task is the generic kubectl CLI task which can be used
+    to run all kinds of k8s commands
+  workspaces:
+    - name: manifest-dir # if you have yaml
+      optional: true
+    - name: kubeconfig-dir # it is need when yo deploy at other cluster
+      optional: true
+  results:
+    - name: output-result # result text
+      description: some result can be emitted if someone wants to.
+  params:
+    - name: script  # cli command, you setting
+      description: The Kubernetes CLI script to run
+      type: string
+      default: "kubectl $@" # $@ means use all parameter and all parameter is individual. parameter is args
+    - name: args
+      description: The Kubernetes CLI arguments to run # args for kubectl command. if you not describe script. then default script " kubectl $@ " activate and use this args like "get" "pod"
+      type: array # multiple args can come
+      default:
+        - "help"
+    - name: image # image for use kubectl to our cluster or other cluster ( if you set kubeconfig )
+      default: gcr.io/cloud-builders/kubectl@sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753 #image is huge
+      description: Kubectl wrapper image
+    - name: deployimage # deploy image, which kaniko build
+      description: Name (reference) of the image to build.
+  steps:
+    - name: kubectl
+      image: $(params.image)
+      script: |
+        #!/usr/bin/env bash
+
+        # if workspace which yaml file saved has bound, go to that directory
+        [[ "$(workspaces.manifest-dir.bound)" == "true" ]] && \
+        cd $(workspaces.manifest-dir.path)
+
+        # update yaml file image name
+        sed -i "s@changetagname@$(params.deployimage)@" test.yaml
+
+        # if kubeconfig workspace has bound and kubeconfig file exist, set env for kubeconfig path
+        [[ "$(workspaces.kubeconfig-dir.bound)" == "true" ]] && \
+        [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]] && \
+        export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig
+
+        # do kubectl command
+        $(params.script)
+
+      args: # args for kubectl command
+        - "$(params.args)"

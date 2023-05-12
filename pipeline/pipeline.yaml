@@ -1,0 +1,57 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hong-cicd
+  namespace: hongspace
+spec:
+  params:
+  - name: repo-url
+    type: string
+  - name: image-reference
+    type: string
+  - name: kubectl-args
+    type: array
+
+  workspaces:
+  - name: shared-data
+  - name: ssl-directory
+  - name: gitlab-auth
+      
+  tasks:
+  - name: fetch-source
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    - name: ssl-ca-directory
+      workspace: ssl-directory
+    - name: gitlab-se
+      workspace: gitlab-auth
+    params:
+    - name: url
+      value: $(params.repo-url)
+
+  - name: build-push
+    runAfter: ["fetch-source"]
+    taskRef: 
+      name: kaniko 
+    workspaces: 
+      - name: source 
+        workspace: shared-data 
+    params:
+      - name: IMAGE
+        value: $(params.image-reference)
+
+  - name: deploy
+    runAfter: ["build-push"]
+    taskRef:
+      name: kubernetes-actions
+    workspaces:
+      - name: manifest-dir
+        workspace: shared-data
+    params:
+      - name: args
+        value: $(params.kubectl-args[*])
+      - name: deployimage
+        value: $(params.image-reference)

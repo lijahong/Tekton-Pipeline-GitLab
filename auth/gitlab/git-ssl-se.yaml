@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata: 
+  name: gitlab-ssl
+  namespace: hongspace
+type: Opaque 
+data:
+  localCA.pem: 'base64로 Root CA 인증서 인코딩한 값'

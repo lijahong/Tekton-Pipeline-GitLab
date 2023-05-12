@@ -1,0 +1,11 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: hong-pb
+  namespace: hongspace
+spec:
+  params:
+  - name: imagetag
+    value: $(body.commits.id)
+  - name: giturl
+    value: $(body.repository.git_http_url)

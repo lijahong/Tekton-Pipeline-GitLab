@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tekton-trigger-ingress
+  namespace: hongspace
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /tektontrigger
+            pathType: Prefix
+            backend:
+              service:
+                name: el-hong-eventlistner
+                port:
+                  number: 8080
+
