@@ -8,11 +8,11 @@
 > #### [ 상세 내용 링크 ](https://velog.io/@lijahong/0%EB%B6%80%ED%84%B0-%EC%8B%9C%EC%9E%91%ED%95%98%EB%8A%94-TEKTON-%EA%B3%B5%EB%B6%80-CICD-Pipeline-%EA%B5%AC%EC%B6%95-GitLab-Private-Repo-Clone-With-TLS)
 
 #### 사용 Repository
-> - Code Repository : GitHub Private Repo
+> - Code Repository : GitLab Private Repo
 > - Image Repository : DockerHub Private Repo
 
 #### Tekton을 이용한 CI / CD Pipeline 구축
-> 1. GitHub Private Repo Clone
+> 1. GitLab Private Repo Clone
 > 2. Kaniko를 이용하여 Docker Image Build & DockerHub Private Repo에 Push
 > 3. Push한 Image를 이용하여 Deployment & Service를 Eks Cluster에 배포
 
@@ -30,8 +30,10 @@
 │   ├── auth-sa.yaml
 │   ├── dockerhub
 │   │   └── docker-config-se.yaml
-│   ├── github
-│   │   └── github-secret.yaml
+│   ├── gitlab
+│   │   ├── git-ssl-se.yaml
+│   │   ├── gitlab-se.yaml
+│   │   └── gitlab-se.yaml.bak
 │   └── rbac
 │       ├── clusterole.yaml
 │       └── clusterrolebind.yaml
@@ -69,7 +71,8 @@
 #### auth Directory : Tekton Pipeline 실행에 필요한 인증 & 권한 정보
 > - auth-sa.yaml : Tekton Pipeline 실행에 사용할 ServiceAccount 파일
 > - dockerhub/docker-config-se.yaml : DockerHub Private Repo 접근에 필요한 인증 정보를 담은 Secrets 파일. dockerconfig.json 정보를 입력해야 한다
-> - github/github-secret.yaml : Github Private Repo 접근에 필요한 인증 정보를 담은 Secrets 파일. GitHub Access Token 정보를 입력해야 한다
+> - gitlab/git-ssl-se.yaml : GitLab TLS 인증을 위한 Root CA 인증서 정보를 담은 Secrets 파일. Root CA 인증서 정보를 입력해야 한다
+> - gitlab/gitlab-secret.yaml : GitLab Private Repo 접근에 필요한 인증 정보를 담은 Secrets 파일. GitLab Username과 AccessToken 정보를 입력해야 한다
 > - rbac/clusterole.yaml : Kubernetes Cluster에 배포하기 위한 권한 정보를 담은 ClusterRole 파일
 > - rbac/clusterrolebind.yaml : auth-sa와 clusterole을 Bind 하기 위한 ClusterRoleBinding 파일
 
