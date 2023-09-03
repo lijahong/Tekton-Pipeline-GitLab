@@ -4,8 +4,6 @@
 
 ## Project 설명
 
-#### *** 23.05.25 Trigger 미완성 ***
-
 #### Tekton을 이용한 Pipeline 구축 & Trigger를 이용한 Pipeline 자동 실행 - GitLab 사용 버전
 > #### [ 상세 내용 링크 ](https://velog.io/@lijahong/0%EB%B6%80%ED%84%B0-%EC%8B%9C%EC%9E%91%ED%95%98%EB%8A%94-TEKTON-%EA%B3%B5%EB%B6%80-CICD-Pipeline-%EA%B5%AC%EC%B6%95-GitLab-Private-Repo-Clone-With-TLS)
 
